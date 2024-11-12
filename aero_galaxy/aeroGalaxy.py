@@ -5,7 +5,8 @@ from os import path
 
 player_dir = path.join(path.dirname(__file__), 'assets/player')
 background_dir = path.join(path.dirname(__file__), 'assets/backgrounds')
-bullet_dir = path.join(path.dirname(__file__), 'assets/bullets')
+shoot_dir = path.join(path.dirname(__file__), 'assets/bullets/shoot_sprites')
+blast_dir = path.join(path.dirname(__file__), 'assets/bullets/blast_sprites')
 explosion_dir = path.join(path.dirname(__file__), 'assets/explosions')
 meteor_dir = path.join(path.dirname(__file__), 'assets/meteors')
 powerup_dir = path.join(path.dirname(__file__), 'assets/powerups')
@@ -17,6 +18,7 @@ FPS = 60
 POWERUP_TIME = 5000
 BAR_LENGTH = 100
 BAR_HEIGHT = 10
+BACKGROUND_SCROLL_SPEED = 0.5
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -28,9 +30,9 @@ YELLOW = (255, 255, 0)
 pygame.init()
 pygame.mixer.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Space Shooter")
+pygame.display.set_caption("AERO GALAXY")
 clock = pygame.time.Clock()
-font_name = pygame.font.match_font('arial')
+font_name = pygame.font.match_font('aptos')
 
 def main_menu():
     global screen
@@ -201,13 +203,13 @@ class Player(pygame.sprite.Sprite):
         if now - self.last_shot > self.shoot_delay:
             self.last_shot = now
             if self.power == 1:
-                bullet = Bullet(self.rect.centerx, self.rect.top)
+                bullet = Shoot(self.rect.centerx, self.rect.top)
                 all_sprites.add(bullet)
                 bullets.add(bullet)
                 shooting_sound.play()
             if self.power == 2:
-                bullet1 = Bullet(self.rect.left, self.rect.centery)
-                bullet2 = Bullet(self.rect.right, self.rect.centery)
+                bullet1 = Shoot(self.rect.left, self.rect.centery)
+                bullet2 = Shoot(self.rect.right, self.rect.centery)
                 all_sprites.add(bullet1)
                 all_sprites.add(bullet2)
                 bullets.add(bullet1)
@@ -215,9 +217,9 @@ class Player(pygame.sprite.Sprite):
                 shooting_sound.play()
 
             if self.power >= 3:
-                bullet1 = Bullet(self.rect.left, self.rect.centery)
-                bullet2 = Bullet(self.rect.right, self.rect.centery)
-                missile1 = Missile(self.rect.centerx, self.rect.top)
+                bullet1 = Shoot(self.rect.left, self.rect.centery)
+                bullet2 = Shoot(self.rect.right, self.rect.centery)
+                missile1 = Blast(self.rect.centerx, self.rect.top)
                 all_sprites.add(bullet1)
                 all_sprites.add(bullet2)
                 all_sprites.add(missile1)
@@ -271,7 +273,7 @@ class Mob(pygame.sprite.Sprite):
         if (self.rect.top > HEIGHT + 10) or (self.rect.left < -25) or (self.rect.right > WIDTH + 20):
             self.rect.x = random.randrange(0, WIDTH - self.rect.width)
             self.rect.y = random.randrange(-100, -40)
-            self.speedy = random.randrange(1, 16)
+            self.speedy = random.randrange(1, 8)
 
 class Pow(pygame.sprite.Sprite):
     def __init__(self, center):
@@ -288,45 +290,96 @@ class Pow(pygame.sprite.Sprite):
         if self.rect.top > HEIGHT:
             self.kill()
             
-class Bullet(pygame.sprite.Sprite):
+class Shoot(pygame.sprite.Sprite):
+    shoot_images = []
+    shoot_list = [
+        'shoot1.png',
+        'shoot2.png',
+        'shoot3.png',
+        'shoot4.png',
+        'shoot5.png',
+        'shoot6.png',
+        'shoot7.png',
+        'shoot8.png'
+    ]
+    for simage in shoot_list:
+        shoot_images.append(pygame.image.load(path.join(shoot_dir, simage)).convert())
+
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = bullet_img
-        self.image.set_colorkey(BLACK)
-        self.rect = self.image.get_rect()
-        self.rect.bottom = y 
-        self.rect.centerx = x
-        self.speedy = -10
-
-    def update(self):
-        self.rect.y += self.speedy
-        if self.rect.bottom < 0:
-            self.kill()
-
-class Missile(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = missile_img
+        self.images = Shoot.shoot_images  # Refere-se à variável de classe
+        self.current_frame = 0
+        self.image = self.images[self.current_frame]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.rect.bottom = y
         self.rect.centerx = x
         self.speedy = -10
+        self.animation_speed = 3
+        self.frame_count = 0
 
     def update(self):
         self.rect.y += self.speedy
+
+        self.frame_count += 1
+        if self.frame_count >= self.animation_speed:
+            self.frame_count = 0
+            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.image = self.images[self.current_frame]
+            self.image.set_colorkey(BLACK)
+
+        if self.rect.bottom < 0:
+            self.kill()
+
+class Blast(pygame.sprite.Sprite):
+
+    blast_images = []
+    blast_list = [
+        'blast1.png',
+        'blast2.png',
+        'blast3.png',
+        'blast4.png',
+        'blast5.png',
+        'blast6.png',
+    ]
+    for blastimage in blast_list:
+        blast_images.append(pygame.image.load(path.join(blast_dir, blastimage)).convert())
+
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.images = Blast.blast_images
+        self.current_frame = 0
+        self.image = self.images[self.current_frame]
+        self.image.set_colorkey(BLACK)
+        self.rect = self.image.get_rect()
+        self.rect.bottom = y
+        self.rect.centerx = x
+        self.speedy = -10
+        self.animation_speed = 3
+        self.frame_count = 0
+
+    def update(self):
+        self.rect.y += self.speedy
+        
+        self.frame_count += 1
+        if self.frame_count >= self.animation_speed:
+            self.frame_count = 0
+            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.image = self.images[self.current_frame]
+            self.image.set_colorkey(BLACK)
+
         if self.rect.bottom < 0:
             self.kill()
 
 
-background = pygame.image.load(path.join(background_dir, 'background.png')).convert()
+background = pygame.image.load(path.join(background_dir, 'bg.png')).convert()
+background = pygame.transform.scale(background, (WIDTH, 1200))
 background_rect = background.get_rect()
+background_y = 0
 
 player_img = pygame.image.load(path.join(player_dir, 'spaceship.png')).convert()
 player_mini_img = pygame.transform.scale(player_img, (25, 19))
 player_mini_img.set_colorkey(BLACK)
-bullet_img = pygame.image.load(path.join(bullet_dir, 'laserRed16.png')).convert()
-missile_img = pygame.image.load(path.join(bullet_dir, 'missile.png')).convert_alpha()
 
 meteor_images = []
 meteor_list = [
@@ -415,6 +468,14 @@ while running:
             if event.key == pygame.K_ESCAPE:
                 running = False
 
+    background_y += 0.5
+    if background_y >= 600:
+        background_y = 0
+
+    screen.fill(BLACK)
+    screen.blit(background, (0, background_y - 600))
+    screen.blit(background, (0, background_y))
+    
     all_sprites.update()
 
     hits = pygame.sprite.groupcollide(mobs, bullets, True, True)
@@ -456,8 +517,6 @@ while running:
         game_over_screen(score)
         menu_display = True
 
-    screen.fill(BLACK)
-    screen.blit(background, background_rect)
     all_sprites.draw(screen)
     draw_text(screen, str(score), 18, WIDTH / 2, 10)
     draw_shield_bar(screen, 5, 5, player.shield)
