@@ -37,7 +37,7 @@ font_name = pygame.font.match_font('aptos')
 def main_menu():
     global screen
 
-    menu_song = pygame.mixer.music.load(path.join(sound_folder, "mmx4-stage-select.ogg"))
+    menu_song = pygame.mixer.music.load(path.join(sound_folder, "menu.ogg"))
     pygame.mixer.music.play(-1)
 
     title = pygame.image.load(path.join(background_dir, "main.png")).convert()
@@ -62,7 +62,7 @@ def main_menu():
             draw_text(screen, "or [Q] To Quit", 30, WIDTH/2, (HEIGHT/2)+40)
             pygame.display.update()
 
-    ready = pygame.mixer.Sound(path.join(sound_folder,'mmx4-ready.ogg'))
+    ready = pygame.mixer.Sound(path.join(sound_folder,'ready.ogg'))
     ready.set_volume(0.1)
     ready.play()
     screen.fill(BLACK)
@@ -143,7 +143,7 @@ class Explosion(pygame.sprite.Sprite):
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(player_img, (70, 58))
+        self.image = pygame.transform.scale(player_img, (80, 68))
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.radius = 20
@@ -303,7 +303,9 @@ class Shoot(pygame.sprite.Sprite):
         'shoot8.png'
     ]
     for simage in shoot_list:
-        shoot_images.append(pygame.image.load(path.join(shoot_dir, simage)).convert())
+        img = pygame.image.load(path.join(shoot_dir, simage)).convert()
+        img = pygame.transform.scale(img, (img.get_width() * 1.2, img.get_height() * 1.2))
+        shoot_images.append(img)
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -343,7 +345,9 @@ class Blast(pygame.sprite.Sprite):
         'blast6.png',
     ]
     for blastimage in blast_list:
-        blast_images.append(pygame.image.load(path.join(blast_dir, blastimage)).convert())
+        img = pygame.image.load(path.join(blast_dir, blastimage)).convert()
+        img = pygame.transform.scale(img, (img.get_width() * 2.2, img.get_height() * 2.2))
+        blast_images.append(img)
 
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -371,8 +375,7 @@ class Blast(pygame.sprite.Sprite):
         if self.rect.bottom < 0:
             self.kill()
 
-
-background = pygame.image.load(path.join(background_dir, 'bg.png')).convert()
+background = pygame.image.load(path.join(background_dir, 'space.png')).convert()
 background = pygame.transform.scale(background, (WIDTH, 1200))
 background_rect = background.get_rect()
 background_y = 0
@@ -419,10 +422,10 @@ powerup_images = {}
 powerup_images['shield'] = pygame.image.load(path.join(powerup_dir, 'shield_gold.png')).convert()
 powerup_images['gun'] = pygame.image.load(path.join(powerup_dir, 'bolt_gold.png')).convert()
 
-shooting_sound = pygame.mixer.Sound(path.join(sound_folder, 'mmx4-shot.ogg'))
+shooting_sound = pygame.mixer.Sound(path.join(sound_folder, 'shot.ogg'))
 shooting_sound.set_volume(0.1)
 
-missile_sound = pygame.mixer.Sound(path.join(sound_folder, 'mmx4-blast.wav'))
+missile_sound = pygame.mixer.Sound(path.join(sound_folder, 'blast.wav'))
 missile_sound.set_volume(0.1)
 
 expl_sounds = []
@@ -432,7 +435,7 @@ for sound in ['expl1.wav', 'expl2.wav']:
     expl_sounds.append(sound_obj)
 pygame.mixer.music.set_volume(0.1)
 
-player_die_sound = pygame.mixer.Sound(path.join(sound_folder, 'mmx4-zero-die.ogg'))
+player_die_sound = pygame.mixer.Sound(path.join(sound_folder, 'death.ogg'))
 player_die_sound.set_volume(0.2)
 
 running = True
@@ -444,7 +447,7 @@ while running:
 
         pygame.mixer.music.stop()
 
-        pygame.mixer.music.load(path.join(sound_folder, 'mmx4-cyberpeacock-theme.ogg'))
+        pygame.mixer.music.load(path.join(sound_folder, 'theme.ogg'))
         pygame.mixer.music.play(-1) 
         pygame.mixer.music.set_volume(0.2)
         
