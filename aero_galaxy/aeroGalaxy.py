@@ -162,9 +162,24 @@ class Explosion(pygame.sprite.Sprite):
 
 # Classe para gerenciar o comportamento do jogador
 class Player(pygame.sprite.Sprite):
+    player_images = []
+    player_image_list = [
+        'player1.png',
+        'player2.png',
+        'player3.png',
+    ]
+
+    for pimage in player_image_list:
+        img = pygame.image.load(path.join(player_dir, pimage)).convert()
+        img = pygame.transform.scale(img, (80, 68))
+        img.set_colorkey(BLACK)
+        player_images.append(img)
+
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(player_img, (80, 68))
+        self.images = Player.player_images
+        self.current_frame = 0
+        self.image = self.images[self.current_frame]
         self.image.set_colorkey(BLACK)
         self.rect = self.image.get_rect()
         self.radius = 20
@@ -180,9 +195,18 @@ class Player(pygame.sprite.Sprite):
         self.hide_timer = pygame.time.get_ticks()
         self.power = 1
         self.power_timer = pygame.time.get_ticks()
+        self.frame_count = 0
+        self.animation_speed = 5
 
     # Atualiza o estado do jogador, verificando power-ups e movimentação
     def update(self):
+        self.frame_count += 1
+        if self.frame_count >= self.animation_speed:
+            self.frame_count = 0
+            self.current_frame = (self.current_frame + 1) % len(self.images)
+            self.image = self.images[self.current_frame]
+            self.image.set_colorkey(BLACK) 
+
         if self.power >=2 and pygame.time.get_ticks() - self.power_time > POWERUP_TIME:
             self.power -= 1 # Reduz o poder após o tempo do power-up expirar
             self.power_time = pygame.time.get_ticks()
@@ -335,7 +359,6 @@ class Shoot(pygame.sprite.Sprite):
         'shoot5.png',
         'shoot6.png',
         'shoot7.png',
-        'shoot8.png'
     ]
     # Carrega e redimensiona as imagens para animação
     for simage in shoot_list:
@@ -376,9 +399,6 @@ class Blast(pygame.sprite.Sprite):
 
     blast_images = []
     blast_list = [
-        'blast1.png',
-        'blast2.png',
-        'blast3.png',
         'blast4.png',
         'blast5.png',
         'blast6.png',
@@ -426,7 +446,7 @@ background_rect = background.get_rect()
 background_y = 0
 
 # Carregamento da imagem do jogador e redimensionamento
-player_img = pygame.image.load(path.join(player_dir, 'spaceship.png')).convert()
+player_img = pygame.image.load(path.join(player_dir, 'player1.png')).convert()
 player_mini_img = pygame.transform.scale(player_img, (25, 19))
 player_mini_img.set_colorkey(BLACK)
 
