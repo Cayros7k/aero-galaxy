@@ -399,9 +399,9 @@ class Blast(pygame.sprite.Sprite):
 
     blast_images = []
     blast_list = [
-        'blast4.png',
-        'blast5.png',
-        'blast6.png',
+        'blast1.png',
+        'blast2.png',
+        'blast3.png',
     ]
 
     # Loop para carregar cada imagem de explosão e redimensioná-la
