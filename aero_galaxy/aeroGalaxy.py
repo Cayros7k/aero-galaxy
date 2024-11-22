@@ -49,7 +49,7 @@ def main_menu():
 
     # Carrega a imagem de título do menu
     title = pygame.image.load(path.join(background_dir, "main.png")).convert()
-    title = pygame.transform.scale(title, (WIDTH, HEIGHT), screen)
+    title = pygame.transform.scale(title, (WIDTH, HEIGHT))
     
     # Exibe a imagem do título na tela
     screen.blit(title, (0,0))
@@ -211,10 +211,13 @@ class Player(pygame.sprite.Sprite):
             self.power -= 1 # Reduz o poder após o tempo do power-up expirar
             self.power_time = pygame.time.get_ticks()
 
-        if self.hidden and pygame.time.get_ticks() - self.hide_timer > 1000:
-            self.hidden = False
-            self.rect.centerx = WIDTH / 2
-            self.rect.bottom = HEIGHT - 30
+        if self.hidden:
+            if pygame.time.get_ticks() - self.hide_timer > 1000:
+                self.hidden = False
+                self.rect.centerx = WIDTH / 2
+                self.rect.bottom = HEIGHT - 30
+            else:
+                return
 
         self.speedx = 0
         self.speedy = 0
