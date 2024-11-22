@@ -48,7 +48,7 @@ def main_menu():
     pygame.mixer.music.play(-1)
 
     # Carrega a imagem de título do menu
-    title = pygame.image.load(path.join(background_dir, "main.png")).convert()
+    title = pygame.image.load(path.join(background_dir, "main-menu.png")).convert()
     title = pygame.transform.scale(title, (WIDTH, HEIGHT))
     
     # Exibe a imagem do título na tela
@@ -67,10 +67,7 @@ def main_menu():
         elif ev.type == pygame.QUIT:
                 pygame.quit()
                 quit() 
-        else:
-            draw_text(screen, "Press [ENTER] To Begin", 30, WIDTH/2, HEIGHT/2)
-            draw_text(screen, "or [Q] To Quit", 30, WIDTH/2, (HEIGHT/2)+40)
-            pygame.display.update()
+                pygame.display.update()
 
     # Toca o som 'Ready'
     ready = pygame.mixer.Sound(path.join(sound_folder,'ready.ogg'))
@@ -118,7 +115,7 @@ def game_over_screen(score):
     screen.fill(BLACK)
     draw_text(screen, "GAME OVER!", 40, WIDTH / 2, HEIGHT / 3)
     draw_text(screen, f"TOTAL SCORE: {score}", 20, WIDTH / 2, HEIGHT / 2.4)
-    draw_text(screen, "PRESS [R] TO RESTART OR [Q] TO QUIT", 30, WIDTH / 2, HEIGHT / 2)
+    draw_text(screen, "PRESS [ESC] TO BACK TO MENU OR [Q] TO QUIT", 30, WIDTH / 2, HEIGHT / 2)
     pygame.display.flip()
 
     waiting = True
@@ -128,7 +125,7 @@ def game_over_screen(score):
                 pygame.quit()
                 quit()
             elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_r:
+                if event.key == pygame.K_ESCAPE:
                     waiting = False
                 elif event.key == pygame.K_q:
                     pygame.quit()
@@ -589,7 +586,7 @@ while running:
             player.hide()
             player.lives -= 1
             player.shield = 100
-
+            
     # Colisão entre os power-ups e o jogador
     hits = pygame.sprite.spritecollide(player, powerups, True)
     for hit in hits:
