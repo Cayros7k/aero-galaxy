@@ -80,9 +80,9 @@ def main_menu():
     pygame.display.update()    
 
 # Função para desenhar texto na tela
-def draw_text(surf, text, size, x, y):
+def draw_text(surf, text, size, x, y, color=(255, 255, 255)):
     font = pygame.font.Font(font_name, size)
-    text_surface = font.render(text, True, WHITE)
+    text_surface = font.render(text, True, color)
     text_rect = text_surface.get_rect()
     text_rect.midtop = (x, y)
     surf.blit(text_surface, text_rect)
@@ -112,10 +112,14 @@ def newmob():
 
 # Exibe a tela de Game Over
 def game_over_screen(score):
-    screen.fill(BLACK)
-    draw_text(screen, "GAME OVER!", 40, WIDTH / 2, HEIGHT / 3)
-    draw_text(screen, f"TOTAL SCORE: {score}", 20, WIDTH / 2, HEIGHT / 2.4)
-    draw_text(screen, "PRESS [ESC] TO BACK TO MENU OR [Q] TO QUIT", 30, WIDTH / 2, HEIGHT / 2)
+    
+    pygame.mixer.music.stop()
+    over_song = pygame.mixer.music.load(path.join(sound_folder, "gameover.ogg"))
+    pygame.mixer.music.play(0)
+    gameover_img = pygame.image.load(path.join(background_dir, "game-over-screen.png")).convert()
+    gameover_img = pygame.transform.scale(gameover_img, (WIDTH, HEIGHT))
+    screen.blit(gameover_img, (0,0))
+    draw_text(screen, f" {score}", 60, WIDTH / 1.6, HEIGHT / 2.3, color=(0, 0, 0))
     pygame.display.flip()
 
     waiting = True
